@@ -65,9 +65,9 @@ enum C2eRgbColor {
 
 enum C2eDir {
     //% block="vorwärts"
-    forward = 0,
+    vorwaerts = 0,
     //% block="rückwärts"
-    backward = 1
+    rueckwaerts = 1
 }
 
 enum C2eState {
