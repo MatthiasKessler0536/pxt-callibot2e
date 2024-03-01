@@ -1,7 +1,7 @@
-
 // V0.0.1
 // Calli:bot 2E
 // 12/2020 Knotech GmbH
+// mit Optimierungen von M. Klein
 
 enum C2eMotor {
     links,
@@ -52,18 +52,21 @@ enum C2eRgbLed {
 }
 
 enum C2eRgbColor {
-    rot,
-    grün,
-    blau,
-    gelb,
-    violett,
-    türkis,
-    weiß
+    red = 0xff0000,
+    green = 0x00ff00,
+    blue = 0x0000ff,
+    yellow = 0xffff00,
+    violett = 0xa300ff,
+    aqua = 0x00ffdc,
+    white = 0xffffff,
+    black = 0x000000
 }
 
 enum C2eDir {
-    vorwärts = 0,
-    rückwärts = 1
+    //% block="vorwärts"
+    vorwaerts = 0,
+    //% block="rückwärts"
+    rückwaerts = 1
 }
 
 enum C2eState {
@@ -80,6 +83,8 @@ enum C2eSensorWait {
     brightness,
     //% block="Temperatur"
     temperature,
+    //% block="Lautstärke"
+    soundLevel,
     //% block="Beschleunigung X"
     accellX,
     //% block="Beschleunigung Y"
@@ -107,6 +112,20 @@ namespace calliBot2E {
     let c2IsBot2 = 0;
     //let KFunkInitialized = 0
 
+    /**
+    * Custom color picker
+    */
+    //% blockId=CallibotNumberPicker block="%value"
+    //% blockHidden=true
+    //% shim=TD_ID
+    //% value.fieldEditor="colornumber" value.fieldOptions.decompileLiterals=true
+    //% weight=150
+    //% value.fieldOptions.colours='["#ff0000","#00ff00","#0000ff","#ffff00","#a300ff","#00ffdc","#ffffff","#000000"]'
+    //% value.fieldOptions.columns=4 value.fieldOptions.className='rgbColorPicker'  
+    export function CallibotNumberPicker(value: number) {
+        return value;
+    }
+    
     function init() {
         if (c2Initialized != 1) {
             c2Initialized = 1;
@@ -120,6 +139,7 @@ namespace calliBot2E {
                 led(C2eMotor.rechts, C2eState.aus);
                 motorStop(C2eMotor.beide, C2eStop.Bremsen);
                 rgbLed(C2eRgbLed.All, 0, 0, 0);
+                rgbLedEnh(C2eRgbLed.All, 0, 0);
             }
 
         }
@@ -145,8 +165,8 @@ namespace calliBot2E {
         }
     }
 
-    //% speed.min=5 speed.max=100
-    //% blockId=c2eMotor block="Schalte Motor |%KMotor| |%KDir| mit |%number| %"
+    //% speed.min=5 speed.max=100 speed.defl=50
+    //% blockId=c2eMotor block="Schalte Motor |%KMotor| |%KDir| mit |%number| \\%"
     export function motor(nr: C2eMotor, direction: C2eDir, speed: number) {
         if (speed > 100) {
             speed = 100
@@ -170,6 +190,7 @@ namespace calliBot2E {
     }
 
     //% pos.min=0 pos.max=180
+    //% pos.shadow="protractorPicker"
     //% blockId=c2eServo block="Bewege Servo |%nr| auf |%pos|°"
     export function servo(nr: C2eServo, pos: number) {
         let buffer = pins.createBuffer(2)
@@ -227,6 +248,85 @@ namespace calliBot2E {
         pins.i2cWriteBuffer(0x21, buffer);
     }
 
+    //% intensity.min=0 intensity.max=8 intensity.defl=6
+    //% blockId=K_RGB_LED block="Schalte Beleuchtung Farbe |%led| Farbe|$color| Helligkeit|$intensity|(0..8)"
+    //% color.shadow="CallibotNumberPicker"   
+    export function rgbLedEnh(led: C2RgbLed, color: number, intensity: number) {
+        let len = 0;
+        let tColor = 0;
+        let index = 0;
+        init()
+        if (intensity < 0) {
+            intensity = 0;
+        }
+        if (intensity > 8) {
+            intensity = 8;
+        }
+        if (intensity > 0) {
+            intensity = (intensity * 2 - 1) * 16;
+            switch (color) {
+                case C2RgbColor.red:
+                    tColor = 0x02
+                    break;
+                case C2RgbColor.green:
+                    tColor = 0x01
+                    break;
+                case C2RgbColor.blue:
+                    tColor = 0x04
+                    break;
+                case C2RgbColor.yellow:
+                    tColor = 0x03
+                    break;
+                case C2RgbColor.aqua:
+                    tColor = 0x05
+                    break;
+                case C2RgbColor.violett:
+                    tColor = 0x06
+                    break;
+                case C2RgbColor.white:
+                    tColor = 0x07
+                    break;
+                case C2RgbColor.black:
+                    tColor = 0x07
+                    intensity = 0
+                    break;
+            }
+        }
+        switch (led) {
+            case C2RgbLed.LH:
+                index = 2;
+                len = 2;
+                break;
+            case C2RgbLed.RH:
+                index = 3;
+                len = 2;
+                break;
+            case C2RgbLed.LV:
+                index = 1;
+                len = 2;
+                break;
+            case C2RgbLed.RV:
+                index = 4;
+                len = 2;
+                break;
+            case C2RgbLed.All:
+                index = 1;
+                len = 5;
+                break;
+        }
+        let buffer = pins.createBuffer(len)
+        buffer[0] = index;
+        buffer[1] = intensity | tColor
+        if (len == 5) {
+            buffer[2] = buffer[1];
+            buffer[3] = buffer[1];
+            buffer[4] = buffer[1];
+        }
+        pins.i2cWriteBuffer(0x21, buffer);
+        basic.pause(10);
+
+    }
+    
     //% blockId=c2eRgb block="Schalte Beleuchtung $led rot $red grün $green blau $blue"
     //% red.min=0 red.max=16
     //% green.min=0 green.max=16
@@ -260,7 +360,7 @@ namespace calliBot2E {
             pins.i2cWriteBuffer(0x22, buffer);
         }
         else { // all leds, repeat 4 times
-            for (index = 1; index <5; index ++){
+            for (index = 1; index <5; index++){
                 buffer[0] = 0x03;
                 buffer[1] = index;
                 buffer[2] = red;
@@ -406,10 +506,6 @@ namespace calliBot2E {
         return result;
     }
 
-
-
-
-
     //% blockID=c2eBattVoltage color="#00C040" block="Batteriespannung (mV)"
     //% advanced = true
     export function batteryVoltage (): number {
@@ -488,6 +584,9 @@ namespace calliBot2E {
                     break;
                 case C2eSensorWait.temperature:
                     sensorValue = input.temperature()
+                    break;
+                case C2eSensorWait.soundLevel:
+                    sensorValue = input.soundLevel()
                     break;
             }
             switch (check) {
