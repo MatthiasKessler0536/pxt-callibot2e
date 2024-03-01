@@ -251,7 +251,7 @@ namespace calliBot2E {
     //% intensity.min=0 intensity.max=8 intensity.defl=6
     //% blockId=K_RGB_LED block="Schalte Beleuchtung Farbe |%led| Farbe|$color| Helligkeit|$intensity|(0..8)"
     //% color.shadow="CallibotNumberPicker"   
-    export function rgbLedEnh(led: C2RgbLed, color: number, intensity: number) {
+    export function rgbLedEnh(led: C2eRgbLed, color: number, intensity: number) {
         let len = 0;
         let tColor = 0;
         let index = 0;
@@ -265,51 +265,51 @@ namespace calliBot2E {
         if (intensity > 0) {
             intensity = (intensity * 2 - 1) * 16;
             switch (color) {
-                case C2RgbColor.red:
+                case C2eRgbColor.red:
                     tColor = 0x02
                     break;
-                case C2RgbColor.green:
+                case C2eRgbColor.green:
                     tColor = 0x01
                     break;
-                case C2RgbColor.blue:
+                case C2eRgbColor.blue:
                     tColor = 0x04
                     break;
-                case C2RgbColor.yellow:
+                case C2eRgbColor.yellow:
                     tColor = 0x03
                     break;
-                case C2RgbColor.aqua:
+                case C2eRgbColor.aqua:
                     tColor = 0x05
                     break;
-                case C2RgbColor.violett:
+                case C2eRgbColor.violett:
                     tColor = 0x06
                     break;
-                case C2RgbColor.white:
+                case C2eRgbColor.white:
                     tColor = 0x07
                     break;
-                case C2RgbColor.black:
+                case C2eRgbColor.black:
                     tColor = 0x07
                     intensity = 0
                     break;
             }
         }
         switch (led) {
-            case C2RgbLed.LH:
+            case C2eRgbLed.LH:
                 index = 2;
                 len = 2;
                 break;
-            case C2RgbLed.RH:
+            case C2eRgbLed.RH:
                 index = 3;
                 len = 2;
                 break;
-            case C2RgbLed.LV:
+            case C2eRgbLed.LV:
                 index = 1;
                 len = 2;
                 break;
-            case C2RgbLed.RV:
+            case C2eRgbLed.RV:
                 index = 4;
                 len = 2;
                 break;
-            case C2RgbLed.All:
+            case C2eRgbLed.All:
                 index = 1;
                 len = 5;
                 break;
