@@ -249,7 +249,7 @@ namespace calliBot2E {
     }
 
     //% blockId=c2eRgbEnh block="Schalte Beleuchtung Farbe |$led| Farbe|$color| Helligkeit|$intensity|(0..8)"
-    //% intensity.min=0 intensity.max=8 intensity.defl=6
+    //% intensity.min=0 intensity.max=8 intensity.defl=8
     //% color.shadow="CallibotNumberPicker"   
     export function rgbLedEnh(led: C2eRgbLed, color: number, intensity: number) {
         let len = 0;
