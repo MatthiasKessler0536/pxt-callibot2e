@@ -1,4 +1,5 @@
-// V0.0.1
+// V0.1
+// 2024-03-01
 // Calli:bot 2E
 // 12/2020 Knotech GmbH
 // mit Optimierungen von M. Klein
@@ -64,9 +65,9 @@ enum C2eRgbColor {
 
 enum C2eDir {
     //% block="vorwärts"
-    vorwaerts = 0,
+    forward = 0,
     //% block="rückwärts"
-    rueckwaerts = 1
+    backward = 1
 }
 
 enum C2eState {
