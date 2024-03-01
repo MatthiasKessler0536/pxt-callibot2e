@@ -66,7 +66,7 @@ enum C2eDir {
     //% block="vorwärts"
     vorwaerts = 0,
     //% block="rückwärts"
-    rückwaerts = 1
+    rueckwaerts = 1
 }
 
 enum C2eState {
