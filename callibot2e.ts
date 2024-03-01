@@ -248,8 +248,8 @@ namespace calliBot2E {
         pins.i2cWriteBuffer(0x21, buffer);
     }
 
+    //% blockId=c2eRgbEnh block="Schalte Beleuchtung Farbe |$led| Farbe|$color| Helligkeit|$intensity|(0..8)"
     //% intensity.min=0 intensity.max=8 intensity.defl=6
-    //% blockId=K_RGB_LED block="Schalte Beleuchtung Farbe |%led| Farbe|$color| Helligkeit|$intensity|(0..8)"
     //% color.shadow="CallibotNumberPicker"   
     export function rgbLedEnh(led: C2eRgbLed, color: number, intensity: number) {
         let len = 0;
@@ -324,7 +324,6 @@ namespace calliBot2E {
         }
         pins.i2cWriteBuffer(0x21, buffer);
         basic.pause(10);
-
     }
     
     //% blockId=c2eRgb block="Schalte Beleuchtung $led rot $red grün $green blau $blue"
